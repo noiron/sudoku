@@ -1,4 +1,4 @@
-const { digits, squares, peers, units } = require('./base');
+const { digits, squares, peers, units, rows } = require('./base');
 
 const grid1 = '3412123423414123';
 const grid0 = '3..2......4...2.';
@@ -31,9 +31,6 @@ function gridValues(grid) {
   }
   return map;
 }
-
-const a = parseGrid(grid0);
-console.log('a: ', a);
 
 // 两种策略
 // 1. 如果一个格子只有唯一的可选数字，则从它的 peers 中删除这个数字
@@ -87,3 +84,19 @@ function eliminate(values, square, digit) {
 
   return values;
 }
+
+function display(values) {
+  let maxWidth = 4;
+  for (const r of rows) {
+    let row = r + '\t';
+    for (const d of digits) {
+      const value = values[r + d];
+      const spaces = new Array(maxWidth - value.length + 1).fill(' ').join('');
+      row = row + value + spaces;
+    }
+    console.log(row + '\n');
+  }
+}
+
+const board = parseGrid(grid0);
+display(board);

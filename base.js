@@ -65,4 +65,5 @@ module.exports = {
   units,
   peers,
   digits,
+  rows,
 };
