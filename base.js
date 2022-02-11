@@ -8,8 +8,10 @@ function cross(A, B) {
   return result;
 }
 
-const digits = '123456789';
-const rows = 'ABCDEFGHI';
+// const digits = '123456789';
+const digits = '1234';
+// const rows = 'ABCDEFGHI';
+const rows = 'ABCD';
 const cols = digits;
 const squares = cross(rows, digits);
 
@@ -23,8 +25,13 @@ for (const col of cols) {
   unitList.push(cross(rows, col));
 }
 // 所有的九宫格
-for (const rs of ['ABC', 'DEF', 'GHI']) {
-  for (const cs of ['123', '456', '789']) {
+// for (const rs of ['ABC', 'DEF', 'GHI']) {
+//   for (const cs of ['123', '456', '789']) {
+//     unitList.push(cross(rs, cs));
+//   }
+// }
+for (const rs of ['AB', 'CD']) {
+  for (const cs of ['12', '34']) {
     unitList.push(cross(rs, cs));
   }
 }
@@ -57,4 +64,5 @@ module.exports = {
   unitList,
   units,
   peers,
+  digits,
 };
