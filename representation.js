@@ -98,5 +98,31 @@ function display(values) {
   }
 }
 
+function solve(grid) {
+  return search(parseGrid(grid));
+}
+
+function search(values) {
+  if (!values) return false;
+
+  const uncertainSquares = [];
+  for (const square of squares) {
+    if (values[square].length > 1) {
+      uncertainSquares.push(square);
+    }
+  }
+  if (uncertainSquares.length === 0) return values; // Solved
+
+  // 先随便选一个格子
+  const square = uncertainSquares[0];
+  for (const d of values[square]) {
+    const v = search(assign({ ...values }, square, d));
+    if (v) return v;
+  }
+}
+
 const board = parseGrid(grid0);
 display(board);
+const v = solve(grid0);
+console.log('v: ', v);
+display(v);
