@@ -1,7 +1,9 @@
 const { digits, squares, peers, units, rows } = require('./base');
 
 const grid1 = '3412123423414123';
-const grid0 = '3..2......4...2.';
+const grid0 = '1..2............';
+const grid2 =
+  '1...34.8....8..5....4.6.....18......3..1.2..6.............7.9....6..9....9.64...2';
 
 function parseGrid(grid) {
   // 开始时，每个格子都可以是任何数字，然后依次将 grid 中的数字分配给相应格子
@@ -9,11 +11,10 @@ function parseGrid(grid) {
   for (const square of squares) {
     values[square] = digits;
   }
-  console.log('每个格子都可以是任何数字: ', values);
 
   for (const [square, digit] of Object.entries(gridValues(grid))) {
     if (digits.includes(digit)) {
-      assign(values, square, digit);
+      if (!assign(values, square, digit)) return false;
     }
   }
 
@@ -32,7 +33,7 @@ function gridValues(grid) {
   return map;
 }
 
-// 两种策略
+// 约束传播的两种策略
 // 1. 如果一个格子只有唯一的可选数字，则从它的 peers 中删除这个数字
 // 2. 如果一个 unit 中只有一个格子可以填入某一个数字，则将这个数字填入这个格子
 // 这就被称为 constraint propagation - 约束传播
@@ -41,7 +42,9 @@ function assign(values, square, digit) {
   // 将除了 digit 以外的数字都从 values[square] 中删除
   const otherValues = values[square].replace(digit, '');
   for (const d2 of otherValues) {
-    eliminate(values, square, d2);
+    if (!eliminate(values, square, d2)) {
+      return false;
+    }
   }
   return values;
 }
@@ -86,7 +89,7 @@ function eliminate(values, square, digit) {
 }
 
 function display(values) {
-  let maxWidth = 4;
+  let maxWidth = 10;
   for (const r of rows) {
     let row = r + '\t';
     for (const d of digits) {
@@ -107,22 +110,23 @@ function search(values) {
 
   const uncertainSquares = [];
   for (const square of squares) {
-    if (values[square].length > 1) {
+    if (values[square].length !== 1) {
       uncertainSquares.push(square);
     }
   }
   if (uncertainSquares.length === 0) return values; // Solved
 
   // 先随便选一个格子
-  const square = uncertainSquares[0];
+  const square = uncertainSquares.find((s) => values[s].length > 1);
+  if (!square) return false;
+
   for (const d of values[square]) {
     const v = search(assign({ ...values }, square, d));
     if (v) return v;
   }
+  return false;
 }
 
-const board = parseGrid(grid0);
-display(board);
-const v = solve(grid0);
-console.log('v: ', v);
-display(v);
+const v = solve(grid2);
+if (!v) console.log('No solution found');
+else display(v);
