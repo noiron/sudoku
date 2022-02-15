@@ -8,10 +8,16 @@ function cross(A, B) {
   return result;
 }
 
-// const digits = '123456789';
-const digits = '1234';
-// const rows = 'ABCDEFGHI';
-const rows = 'ABCD';
+// 开发时，使用 4x4 的格子方便测试
+const DIMENSION = 9;
+
+let digits = '123456789';
+let rows = 'ABCDEFGHI';
+if (DIMENSION === 4) {
+  digits = '1234';
+  rows = 'ABCD';
+}
+
 const cols = digits;
 const squares = cross(rows, digits);
 
@@ -25,14 +31,17 @@ for (const col of cols) {
   unitList.push(cross(rows, col));
 }
 // 所有的九宫格
-// for (const rs of ['ABC', 'DEF', 'GHI']) {
-//   for (const cs of ['123', '456', '789']) {
-//     unitList.push(cross(rs, cs));
-//   }
-// }
-for (const rs of ['AB', 'CD']) {
-  for (const cs of ['12', '34']) {
-    unitList.push(cross(rs, cs));
+if (DIMENSION === 9) {
+  for (const rs of ['ABC', 'DEF', 'GHI']) {
+    for (const cs of ['123', '456', '789']) {
+      unitList.push(cross(rs, cs));
+    }
+  }
+} else if (DIMENSION === 4) {
+  for (const rs of ['AB', 'CD']) {
+    for (const cs of ['12', '34']) {
+      unitList.push(cross(rs, cs));
+    }
   }
 }
 

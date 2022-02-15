@@ -9,11 +9,13 @@ function parseGrid(grid) {
   // 开始时，每个格子都可以是任何数字，然后依次将 grid 中的数字分配给相应格子
   const values = {};
   for (const square of squares) {
+    // 刚开始时，每个格子都可以分配所有的数字
     values[square] = digits;
   }
 
   for (const [square, digit] of Object.entries(gridValues(grid))) {
     if (digits.includes(digit)) {
+      // 如果无法将 digit 分配给 square，说明无解
       if (!assign(values, square, digit)) return false;
     }
   }
@@ -38,11 +40,13 @@ function gridValues(grid) {
 // 2. 如果一个 unit 中只有一个格子可以填入某一个数字，则将这个数字填入这个格子
 // 这就被称为 constraint propagation - 约束传播
 
+/**
+ * 将 digit 填入 square，在这个过程中执行约束传播
+ */
 function assign(values, square, digit) {
-  // 将除了 digit 以外的数字都从 values[square] 中删除
   const otherValues = values[square].replace(digit, '');
-  for (const d2 of otherValues) {
-    if (!eliminate(values, square, d2)) {
+  for (const d of otherValues) {
+    if (!eliminate(values, square, d)) {
       return false;
     }
   }
@@ -59,7 +63,7 @@ function eliminate(values, square, digit) {
 
   values[square] = values[square].replace(digit, '');
 
-  // 如果不存在可以填入的数字了，一定有问题
+  // 如果不存在可以填入的数字了，则无解
   if (values[square].length === 0) {
     return false;
   }
@@ -71,10 +75,11 @@ function eliminate(values, square, digit) {
     }
   }
 
-  // 找出 digit 可以填入的 square
-  for (const u of units[square]) {
+  // digit 已经从 square 中排除了，接下来找出 digit 可以填入的格子
+  // 如果只有唯一的位置，则填入
+  for (const unit of units[square]) {
     const digitPlaces = [];
-    for (const s of u) {
+    for (const s of unit) {
       if (values[s].includes(digit)) digitPlaces.push(s);
     }
     if (digitPlaces.length === 0) {
@@ -105,28 +110,33 @@ function solve(grid) {
   return search(parseGrid(grid));
 }
 
+/**
+ * 如果一个格子可以填入超过一个的数字，则尝试填入这些数字，看是否可解
+ */
 function search(values) {
   if (!values) return false;
 
   const uncertainSquares = [];
   for (const square of squares) {
-    if (values[square].length !== 1) {
+    if (values[square].length === 0) {
+      return false;
+    }
+    if (values[square].length > 1) {
       uncertainSquares.push(square);
     }
   }
   if (uncertainSquares.length === 0) return values; // Solved
 
-  // 先随便选一个格子
+  // 先随便选一个格子，todo: 选择可能性最少的格子
   const square = uncertainSquares.find((s) => values[s].length > 1);
-  if (!square) return false;
 
-  for (const d of values[square]) {
-    const v = search(assign({ ...values }, square, d));
+  for (const digit of values[square]) {
+    const v = search(assign({ ...values }, square, digit));
     if (v) return v;
   }
   return false;
 }
 
-const v = solve(grid2);
-if (!v) console.log('No solution found');
-else display(v);
+const result = solve(grid2);
+if (!result) console.log('No solution found');
+else display(result);
