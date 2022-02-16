@@ -4,7 +4,20 @@ const grid1 = '3412123423414123';
 const grid0 = '1..2............';
 const grid2 =
   '1...34.8....8..5....4.6.....18......3..1.2..6.............7.9....6..9....9.64...2';
-
+const grid3 =
+`
+. . . |. . 5 |. 8 . 
+. . . |6 . 1 |. 4 3 
+. . . |. . . |. . . 
+------+------+------
+. 1 . |5 . . |. . . 
+. . . |1 . 6 |. . . 
+3 . . |. . . |. . 5 
+------+------+------
+5 3 . |. . . |. 6 1 
+. . . |. . . |. . 4 
+. . . |. . . |. . . 
+`
 function parseGrid(grid) {
   // 开始时，每个格子都可以是任何数字，然后依次将 grid 中的数字分配给相应格子
   const values = {};
@@ -104,16 +117,33 @@ function eliminate(values, square, digit) {
 }
 
 function display(values) {
-  let maxWidth = 10;
-  for (const r of rows) {
-    let row = r + '\t';
+  let maxWidth = Math.max(...Object.values(values).map((v) => v.length));
+  const strByRow = [];
+
+  function generateRow(r) {
+    let rowStr = '';
     for (const d of digits) {
       const value = values[r + d];
-      const spaces = new Array(maxWidth - value.length + 1).fill(' ').join('');
-      row = row + value + spaces;
+      const spaces = ' '.repeat(maxWidth - value.length + 1);
+      rowStr += value + spaces;
+      if (d === '3' || d === '6') {
+        rowStr += '|';
+      }
     }
-    console.log(row + '\n');
+    strByRow.push(rowStr);
   }
+
+  // like this: ------+------+------
+  const separatorItem = '-'.repeat((maxWidth + 1) * 3);
+  const separator = new Array(3).fill(separatorItem).join('+');
+
+  for (const r of rows) {
+    generateRow(r);
+    if (r === 'C' || r === 'F') {
+      strByRow.push(separator);
+    }
+  }
+  console.log(strByRow.join('\n'));
 }
 
 function solve(grid) {
@@ -148,5 +178,11 @@ function search(values) {
 }
 
 const result = solve(grid2);
+display(parseGrid(grid2));
 if (!result) console.log('No solution found');
 else display(result);
+
+module.exports = {
+  solve,
+  display,
+};
