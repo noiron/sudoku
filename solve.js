@@ -27,25 +27,32 @@ function parseGrid(grid) {
  * Convert grid into a map of { square: char } with '0' or '.' for empties.
  */
 function gridValues(grid) {
+  let chars = '';
+  for (const c of grid) {
+    if (digits.includes(c) || c === '.' || c === '0') {
+      chars += c;
+    }
+  }
   const map = {};
   for (let i = 0; i < squares.length; i++) {
     const square = squares[i];
-    map[square] = grid[i];
+    map[square] = chars[i];
   }
   return map;
 }
 
-// 约束传播的两种策略
+// 约束传播的两种策略 constraint propagation
 // 1. 如果一个格子只有唯一的可选数字，则从它的 peers 中删除这个数字
 // 2. 如果一个 unit 中只有一个格子可以填入某一个数字，则将这个数字填入这个格子
-// 这就被称为 constraint propagation - 约束传播
 
 /**
  * 将 digit 填入 square，在这个过程中执行约束传播
  */
 function assign(values, square, digit) {
+  // 将除 digit 以外的其他数字从 square 的备选数字中排除
   const otherValues = values[square].replace(digit, '');
   for (const d of otherValues) {
+    // 在这个过程中，如果出现了矛盾，则返回 false
     if (!eliminate(values, square, d)) {
       return false;
     }
@@ -57,8 +64,9 @@ function assign(values, square, digit) {
  * 将 values[square] 中的 digit 删除
  */
 function eliminate(values, square, digit) {
+  // 这个数字已经排除了，则直接返回
   if (!values[square].includes(digit)) {
-    return;
+    return values;
   }
 
   values[square] = values[square].replace(digit, '');
@@ -68,10 +76,12 @@ function eliminate(values, square, digit) {
     return false;
   }
 
-  // 一个格子只有唯一的可选数字，则从它的 peers 中删除这个数字
+  // 这个格子只有唯一的可选数字，则从它的 peers 中删除这个数字
   if (values[square].length === 1) {
     for (const s of peers[square]) {
-      eliminate(values, s, values[square]);
+      if (!eliminate(values, s, values[square])) {
+        return false;
+      }
     }
   }
 
