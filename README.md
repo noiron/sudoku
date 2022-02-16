@@ -1,8 +1,9 @@
-依据[这篇文章](https://norvig.com/sudoku.html)中的 Python 代码实现的 JavaScript 版本。
+The JavaScript version code according to the Python code in Peter Norvig's article[Solving Every Sudoku Puzzle
+](https://norvig.com/sudoku.html).
 
-Just run `node sudo.js`, then it will solve all puzzles in puzzles/hardest.txt file.
+Just run `node sudo.js`, then it will solve all puzzles in `puzzles/hardest.txt` file.
 
 ## TODO
 
-读取 easy50.txt 中的 Puzzle
-计时统计功能
+- Read puzzles in `easy50.txt` file.
+- Timing function.
